@@ -1,0 +1,444 @@
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Defensive base spacing to prevent vertical scrollbars in standard Rise wrappers */
+  body {
+    margin: 0;
+    padding: 0 0 40px 0;
+    background-color: transparent;
+  }
+
+  /* Style Bleed Prevention */
+  #rise-ocm-dashboard, 
+  #rise-ocm-dashboard * {
+    box-sizing: border-box;
+  }
+
+  /* Strict Width Constraints & Layout */
+  #rise-ocm-dashboard {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F4F7FA;
+    max-width: 800px;
+    width: calc(100% - 32px);
+    margin: 24px auto;
+    border-radius: 12px;
+    padding: 32px;
+    color: #02102B;
+    border: 1px solid rgba(11, 42, 99, 0.15);
+    box-shadow: 0 4px 20px rgba(2, 16, 43, 0.05);
+  }
+  
+  .ocm-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .ocm-title { 
+    color: #0B2A63; 
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+  }
+
+  .ocm-subtitle {
+    color: #02102B;
+    font-size: 14px;
+    margin: 0 0 20px 0;
+    opacity: 0.8;
+  }
+
+  /* Interactive Disruption Toggle Button */
+  .disrupt-btn {
+    background-color: #0B2A63;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(11, 42, 99, 0.2);
+  }
+
+  .disrupt-btn:hover {
+    background-color: #11C7E6;
+    transform: translateY(-1px);
+  }
+
+  /* Wonky Card Grid System */
+  .ocm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Base Card Styling matching provided UI asset layout */
+  .ocm-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    border: 1px solid rgba(2, 16, 43, 0.08);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    user-select: none;
+  }
+
+  /* Default Wonky Behavior representing organizational friction */
+  .ocm-card.wonky-active {
+    animation: floatingChaos 4s ease-in-out infinite alternate;
+  }
+  .ocm-grid.disrupted .ocm-card:nth-child(1).wonky-active { animation-delay: 0.1s; transform: rotate(-1.5deg); }
+  .ocm-grid.disrupted .ocm-card:nth-child(2).wonky-active { animation-delay: 0.4s; transform: rotate(2deg); }
+  .ocm-grid.disrupted .ocm-card:nth-child(3).wonky-active { animation-delay: 0.2s; transform: rotate(1.8deg); }
+  .ocm-grid.disrupted .ocm-card:nth-child(4).wonky-active { animation-delay: 0.6s; transform: rotate(-2deg); }
+  .ocm-grid.disrupted .ocm-card:nth-child(5).wonky-active { animation-delay: 0.3s; transform: rotate(-1.2deg); }
+  .ocm-grid.disrupted .ocm-card:nth-child(6).wonky-active { animation-delay: 0.5s; transform: rotate(1.5deg); }
+
+  @keyframes floatingChaos {
+    0% { transform: translateY(0px) rotate(-1.5deg); }
+    50% { transform: translateY(-4px) rotate(1.5deg); }
+    100% { transform: translateY(2px) rotate(-0.5deg); }
+  }
+
+  .ocm-card:hover {
+    border-color: #11C7E6;
+    box-shadow: 0 4px 12px rgba(17, 199, 230, 0.15);
+  }
+
+  /* Stabilized State (Clicked / Managed Change) */
+  .ocm-card.stabilized {
+    animation: none !important;
+    transform: none !important;
+    border: 2px solid #11C7E6;
+    background-color: rgba(17, 199, 230, 0.03);
+  }
+
+  /* Left-side Icon Circle Container */
+  .icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #F4F7FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  .ocm-card.stabilized .icon-container {
+    background-color: rgba(17, 199, 230, 0.15);
+  }
+
+  .icon-svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: #0B2A63;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.3s ease;
+  }
+
+  .ocm-card.stabilized .icon-svg {
+    stroke: #0B2A63;
+  }
+
+  /* Right-side Text Data */
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .role-number {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #0B2A63;
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .role-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0B2A63;
+  }
+
+  /* Insight Output Panel */
+  .insight-panel {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 24px;
+    border-left: 4px solid #0B2A63;
+    min-height: 100px;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(2, 16, 43, 0.02);
+  }
+
+  .insight-panel.active-highlight {
+    border-left-color: #11C7E6;
+  }
+
+  .insight-placeholder {
+    color: #02102B;
+    opacity: 0.6;
+    font-style: italic;
+    margin: 0;
+  }
+
+  .insight-heading {
+    color: #0B2A63;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+  }
+
+  .insight-body {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: #02102B;
+  }
+
+  /* Completion Toast Notification */
+  .completion-banner {
+    display: none;
+    background-color: #0B2A63;
+    color: #FFFFFF;
+    padding: 16px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 20px;
+    animation: fadeIn 0.5s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile Responsiveness Rules */
+  @media (max-width: 768px) {
+    #rise-ocm-dashboard {
+      width: calc(100% - 24px);
+      margin: 12px auto;
+      padding: 20px 16px;
+    }
+    
+    .ocm-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    
+    .ocm-card {
+      padding: 16px;
+    }
+  }
+</style>
+
+<div id="rise-ocm-dashboard">
+  <div class="ocm-header">
+    <h2 class="ocm-title">Navigating Organizational Friction</h2>
+    <p class="ocm-subtitle">Structural change shifts alignments. Click "Simulate Disruption" to observe operational turbulence, then click each role to stabilize them through strategic change management interventions.</p>
+    <button class="disrupt-btn" id="disruptToggle" onclick="toggleDisruption()">
+      <svg class="icon-svg" style="stroke: #FFF; width:16px; height:16px;" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+      Simulate Disruption
+    </button>
+  </div>
+
+  <div class="ocm-grid" id="rolesGrid">
+    
+    <div class="ocm-card" onclick="stabilizeRole(1, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 01</span>
+        <span class="role-title">Researchers</span>
+      </div>
+    </div>
+
+    <div class="ocm-card" onclick="stabilizeRole(2, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 02</span>
+        <span class="role-title">Analysts</span>
+      </div>
+    </div>
+
+    <div class="ocm-card" onclick="stabilizeRole(3, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 03</span>
+        <span class="role-title">Legal Staff</span>
+      </div>
+    </div>
+
+    <div class="ocm-card" onclick="stabilizeRole(4, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 04</span>
+        <span class="role-title">Finance Teams</span>
+      </div>
+    </div>
+
+    <div class="ocm-card" onclick="stabilizeRole(5, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 05</span>
+        <span class="role-title">Operations</span>
+      </div>
+    </div>
+
+    <div class="ocm-card" onclick="stabilizeRole(6, this)">
+      <div class="icon-container">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      </div>
+      <div class="card-meta">
+        <span class="role-number">Role 06</span>
+        <span class="role-title">Exec Assistants</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="insight-panel" id="insightPanel">
+    <p class="insight-placeholder" id="placeholderText">Select a role above to explore their transformation vulnerability and required management strategy.</p>
+    <div id="insightContent" style="display: none;">
+      <h4 class="insight-heading" id="insightTitle">Role Impact</h4>
+      <p class="insight-body" id="insightBody"></p>
+    </div>
+  </div>
+
+  <div class="completion-banner" id="completionBanner">
+    Alignment Restored! All tracks are successfully integrated into the change framework.
+  </div>
+</div>
+
+<script>
+  // Dynamic data matrix structured for transformation impact tracking
+  const roleInsights = {
+    1: {
+      title: "Researchers — Friction: Analysis Paralysis & Methodology Shifts",
+      body: "Researchers risk getting bogged down trying to validate new parameters with old variables. Resolve this by defining clear parameters early, assuring data custody transitions smoothly, and aligning target hypotheses with the new corporate structure."
+    },
+    2: {
+      title: "Analysts — Friction: Broken Pipelines & Metrics Dislocation",
+      body: "Systemic shifts disconnect reporting dashboards, causing critical insight blind spots. Mitigate this chaos by conducting structural data mapping sprints, running parallel tracking frameworks, and prioritizing lead metrics during migration."
+    },
+    3: {
+      title: "Legal Staff — Friction: Compliance Bottlenecks & Risk Aversion",
+      body: "Structural re-engineering triggers regulatory reassessments. Prevent absolute functional gridlock by provisioning modular governance templates, embedding legal validation early inside cross-functional units, and establishing explicit safety thresholds."
+    },
+    4: {
+      title: "Finance Teams — Friction: Budgetary Variance & Cost-Center Flux",
+      body: "Operational reallocation disrupts cost-center reporting lines, provoking structural anxiety. Maintain equilibrium by executing rolling variance reviews, establishing clear bridge budgets, and tracking real-time transition milestones."
+    },
+    5: {
+      title: "Operations — Friction: Process Disruption & Training Legacy Backlog",
+      body: "Frontline executors bear the brunt of mechanical structural changes. Stabilize deployment through early sandboxed system dry-runs, tiered super-user support networks, and transparent feedback systems."
+    },
+    6: {
+      title: "Exec Assistants — Friction: Strategic Misalignment & Calendar Chaos",
+      body: "Communication bottlenecks happen when executive support teams operate on obsolete operational instructions. Empower assistants through early systemic briefing integration and unified communication repositories."
+    }
+  };
+
+  let stabilizedRoles = new Set();
+  let disruptionActive = false;
+
+  function toggleDisruption() {
+    const grid = document.getElementById('rolesGrid');
+    const cards = document.querySelectorAll('.ocm-card');
+    const button = document.getElementById('disruptToggle');
+    
+    disruptionActive = !disruptionActive;
+    
+    if (disruptionActive) {
+      grid.classList.add('disrupted');
+      button.style.backgroundColor = '#11C7E6';
+      button.innerHTML = `<svg class="icon-svg" style="stroke: #FFF; width:16px; height:16px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Stop Chaos Simulation`;
+      
+      cards.forEach(card => {
+        if (!card.classList.contains('stabilized')) {
+          card.classList.add('wonky-active');
+        }
+      });
+    } else {
+      grid.classList.remove('disrupted');
+      button.style.backgroundColor = '#0B2A63';
+      button.innerHTML = `<svg class="icon-svg" style="stroke: #FFF; width:16px; height:16px;" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> Simulate Disruption`;
+      
+      cards.forEach(card => {
+        card.classList.remove('wonky-active');
+      });
+    }
+  }
+
+  function stabilizeRole(roleId, cardElement) {
+    // Add layout stabilization states
+    cardElement.classList.remove('wonky-active');
+    cardElement.classList.add('stabilized');
+    
+    stabilizedRoles.add(roleId);
+    
+    // Inject and transition specific text insights
+    const panel = document.getElementById('insightPanel');
+    const placeholder = document.getElementById('placeholderText');
+    const content = document.getElementById('insightContent');
+    const title = document.getElementById('insightTitle');
+    const body = document.getElementById('insightBody');
+    
+    placeholder.style.display = 'none';
+    content.style.display = 'block';
+    panel.classList.add('active-highlight');
+    
+    title.innerText = roleInsights[roleId].title;
+    body.innerText = roleInsights[roleId].body;
+    
+    // Remove panel visual flash highlight after transition finishes
+    setTimeout(() => {
+      panel.classList.remove('active-highlight');
+    }, 400);
+
+    // Mandated Completion Action check
+    if (stabilizedRoles.size === 6) {
+      reportCompletion();
+    }
+  }
+
+  function reportCompletion() {
+    // Reveal native success banner
+    document.getElementById('completionBanner').style.display = 'block';
+    
+    // Deactivate entire chaos matrix engine safely
+    if (disruptionActive) {
+      toggleDisruption();
+    }
+    
+    // Standard required Articulate Rise cross-domain event communications hook
+    window.parent.postMessage({ type: 'complete' }, '*');
+  }
+</script>
