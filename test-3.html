@@ -1,0 +1,497 @@
+<!-- ADKAR Weird Dial Interaction -->
+<!-- Description: Place this component in a Rise 360 Embed block. Learners rotate the central dial to activate 'weird' animated visual cues for each ADKAR phase. Completing the activity triggers the Rise completion event. Reference Image: image_0.png shows a clean grid of roles; this interaction adapts that professional visual energy into a playful, exciting, and responsive format. -->
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Defensive base spacing to prevent vertical scrollbars in standard Rise wrappers */
+  body {
+    margin: 0;
+    padding: 0 0 60px 0; /* Extra bottom padding for dial overhang */
+    background-color: transparent;
+    overflow: hidden; /* Let the container handle overflow if needed, preventing double scrolls */
+  }
+
+  /* Style Bleed Prevention */
+  #custom-container-adkar-dial, 
+  #custom-container-adkar-dial * {
+    box-sizing: border-box;
+  }
+
+  /* Strict Width Constraints & Layout */
+  #custom-container-adkar-dial {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F4F7FA;
+    max-width: 800px;
+    width: calc(100% - 32px);
+    margin: 24px auto;
+    border-radius: 8px;
+    padding: 40px;
+    color: #02102B;
+    border: 1px solid #02102B;
+    box-shadow: 0 4px 12px rgba(2, 16, 43, 0.1);
+    position: relative;
+    overflow: visible; /* Dial overhangs slightly */
+  }
+  
+  .brand-primary { 
+    color: #0B2A63;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .widget-instruction {
+    text-align: center;
+    font-size: 14px;
+    color: #02102B;
+    margin-bottom: 40px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* The Main Interactive Core */
+  .dial-system {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .dial-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    gap: 16px;
+  }
+
+  /* Interactive Dials - Adapt from role card energy */
+  .dial-button {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(11, 42, 99, 0.15);
+    border-radius: 6px;
+    padding: 16px 20px;
+    width: calc(50% - 8px);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    position: relative;
+  }
+
+  .dial-button:hover {
+    border-color: #11C7E6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(17, 199, 230, 0.15);
+  }
+
+  .dial-button.active {
+    border-color: #0B2A63;
+    background-color: rgba(11, 42, 99, 0.05);
+    box-shadow: inset 3px 0 0 0 #0B2A63;
+  }
+
+  /* Monochromatic Outline Icons */
+  .dial-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #0B2A63;
+    stroke-width: 1.5;
+    fill: none;
+    transition: stroke 0.25s ease;
+  }
+
+  .dial-button:hover .dial-icon {
+    stroke: #11C7E6;
+  }
+
+  .dial-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dial-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(11, 42, 99, 0.7);
+    font-weight: 600;
+  }
+
+  .dial-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0B2A63;
+  }
+
+  /* The Central Animation Hub */
+  .weird-hub {
+    width: 160px;
+    height: 160px;
+    border-radius: 100px;
+    background-color: #FFFFFF;
+    border: 3px solid #0B2A63;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.5s ease;
+    box-shadow: 0 6px 16px rgba(2, 16, 43, 0.15);
+    overflow: hidden; /* Contain weird effects */
+  }
+
+  .weird-hub:hover {
+    border-color: #11C7E6;
+  }
+
+  /* Central Dial Pointer */
+  .dial-pointer {
+    width: 40px;
+    height: 40px;
+    background-color: #0B2A63;
+    border-radius: 50%;
+    position: relative;
+    z-index: 10;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), background-color 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(2, 16, 43, 0.3);
+  }
+  
+  .weird-hub:hover .dial-pointer {
+    background-color: #11C7E6;
+  }
+
+  /* The Weird Effects - Hidden initially */
+  .effect-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+
+  /* A: Awareness Effect - Glitchy scanline */
+  .effect-a {
+    background: repeating-linear-gradient(0deg, rgba(11, 42, 99, 0.05) 0px, rgba(11, 42, 99, 0.05) 1px, transparent 1px, transparent 2px);
+    animation: scan 2s linear infinite;
+  }
+  
+  /* D: Desire Effect - Pulsing warm glow */
+  .effect-d {
+    background: radial-gradient(circle, rgba(17, 199, 230, 0.3) 0%, transparent 70%);
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+  
+  /* K: Knowledge Effect - Data particles floating */
+  .effect-k {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="10" cy="10" r="2" fill="%230B2A63" opacity="0.2"/><circle cx="50" cy="50" r="3" fill="%230B2A63" opacity="0.1"/><circle cx="80" cy="20" r="1.5" fill="%230B2A63" opacity="0.25"/></svg>');
+    animation: float 4s linear infinite;
+  }
+
+  /* A: Ability Effect - Rapidly shaking gears */
+  .effect-a-ability {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%230B2A63" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.08"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>');
+    animation: jitter 0.1s linear infinite;
+  }
+
+  /* R: Reinforcement Effect - Multiple overlapping shadows */
+  .effect-r {
+    box-shadow: 
+      inset 0 0 20px rgba(11, 42, 99, 0.1),
+      0 0 10px rgba(11, 42, 99, 0.05),
+      0 0 15px rgba(17, 199, 230, 0.08),
+      0 0 25px rgba(2, 16, 43, 0.03);
+    border-color: rgba(11, 42, 99, 0.5);
+  }
+
+  /* Activation Classes */
+  .a-active .effect-a { opacity: 1; }
+  .d-active .effect-d { opacity: 1; }
+  .k-active .effect-k { opacity: 1; }
+  .a-ability-active .effect-a-ability { opacity: 1; }
+  .r-active .effect-r { opacity: 1; }
+
+  /* Description text area */
+  .phase-display {
+    text-align: center;
+    max-width: 500px;
+    margin: 32px auto 0 auto;
+    min-height: 80px;
+    transition: opacity 0.3s ease;
+  }
+
+  .phase-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0B2A63;
+    margin-bottom: 8px;
+  }
+
+  .phase-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #02102B;
+    margin: 0;
+  }
+
+  /* Completion Checkbox Button - Adapt interactive style */
+  .interactive-element {
+    background-color: #0B2A63;
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 48px auto 0 auto;
+    box-shadow: 0 4px 8px rgba(11, 42, 99, 0.2);
+  }
+
+  .interactive-element:hover {
+    background-color: #11C7E6;
+    color: #02102B;
+    transform: translateY(-1px);
+  }
+
+  /* Completion Checkmark Animation */
+  .completion-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+    stroke: #FFFFFF;
+    stroke-width: 2.5;
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 0.5s ease 0.1s;
+  }
+
+  .interactive-element:hover .completion-icon {
+    stroke: #02102B;
+  }
+
+  #submit-btn.completed .completion-icon {
+    stroke-dashoffset: 0;
+  }
+
+  /* Keyframe Animations for Weirdness */
+  @keyframes scan {
+    from { background-position: 0 0; }
+    to { background-position: 0 24px; }
+  }
+
+  @keyframes pulse {
+    from { opacity: 0.1; transform: scale(0.9); }
+    to { opacity: 0.4; transform: scale(1.1); }
+  }
+
+  @keyframes float {
+    from { background-position: 0 0; }
+    to { background-position: 100px -100px; }
+  }
+
+  @keyframes jitter {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
+  /* Mobile Responsiveness Rules */
+  @media (max-width: 768px) {
+    #custom-container-adkar-dial {
+      width: calc(100% - 24px);
+      margin: 12px auto;
+      padding: 32px 24px;
+    }
+    
+    .dial-controls {
+      flex-direction: column;
+      max-width: 100%;
+    }
+
+    .dial-button {
+      width: 100%;
+      padding: 12px 16px;
+    }
+
+    .weird-hub {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .dial-pointer {
+      width: 32px;
+      height: 32px;
+    }
+
+    .phase-display {
+      margin-top: 24px;
+    }
+  }
+</style>
+
+<div id="custom-container-adkar-dial">
+  <h2 class="brand-primary">The Weird ADKAR Action Dial</h2>
+  <p class="widget-instruction">Understanding change takes weird energy. Select each phase below to rotate the central dial and see its 'weird' effect.</p>
+  
+  <div class="dial-system">
+    
+    <!-- A & D Controls -->
+    <div class="dial-controls">
+      <button class="dial-button" onclick="activatePhase('a', 0)" id="btn-a" aria-label="Activate Awareness Phase">
+        <div class="dial-info">
+          <span class="dial-label">Phase 01</span>
+          <span class="dial-name">Awareness</span>
+        </div>
+        <svg class="dial-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+
+      <button class="dial-button" onclick="activatePhase('d', 72)" id="btn-d" aria-label="Activate Desire Phase">
+        <div class="dial-info">
+          <span class="dial-label">Phase 02</span>
+          <span class="dial-name">Desire</span>
+        </div>
+        <svg class="dial-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+      </button>
+    </div>
+
+    <!-- The Weird Hub (Central Animation) -->
+    <div class="weird-hub" id="weird-hub">
+      <div class="effect-layer effect-a"></div>
+      <div class="effect-layer effect-d"></div>
+      <div class="effect-layer effect-k"></div>
+      <div class="effect-layer effect-a-ability"></div>
+      <div class="effect-layer effect-r"></div>
+      <div class="dial-pointer" id="dial-pointer"></div>
+    </div>
+
+    <!-- K, A(bility), R Controls -->
+    <div class="dial-controls">
+      <button class="dial-button" onclick="activatePhase('k', 144)" id="btn-k" aria-label="Activate Knowledge Phase">
+        <div class="dial-info">
+          <span class="dial-label">Phase 03</span>
+          <span class="dial-name">Knowledge</span>
+        </div>
+        <svg class="dial-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      </button>
+
+      <button class="dial-button" onclick="activatePhase('a-ability', 216)" id="btn-a-ability" aria-label="Activate Ability Phase">
+        <div class="dial-info">
+          <span class="dial-label">Phase 04</span>
+          <span class="dial-name">Ability</span>
+        </div>
+        <svg class="dial-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+      </button>
+
+      <button class="dial-button" onclick="activatePhase('r', 288)" id="btn-r" aria-label="Activate Reinforcement Phase">
+        <div class="dial-info">
+          <span class="dial-label">Phase 05</span>
+          <span class="dial-name">Reinforcement</span>
+        </div>
+        <svg class="dial-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Dynamic Content Display Panel -->
+  <div class="phase-display" id="phase-display">
+    <p class="phase-title" id="phase-title">Ready to Rotate</p>
+    <p class="phase-text" id="phase-text">Select a phase button to begin the weird ADKAR journey.</p>
+  </div>
+
+  <button class="interactive-element" id="submit-btn" onclick="reportCompletion()">
+    <svg class="completion-icon" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    Complete Activity
+  </button>
+</div>
+
+<script>
+  // Data for each ADKAR phase
+  const phaseData = {
+    'a': {
+      title: "Awareness of the need for change",
+      text: "Understanding *why* the change is necessary before any action happens. The weird energy here is identifying hidden patterns."
+    },
+    'd': {
+      title: "Desire to support the change",
+      text: "Building personal motivation and engagement. This is the weird, pulsing spark that turns 'have to' into 'want to'."
+    },
+    'k': {
+      title: "Knowledge on how to change",
+      text: "Learning new skills and behaviors. A weird flow of structured data and floating concepts starts to take hold."
+    },
+    'a-ability': {
+      title: "Ability to implement the change",
+      text: "Turning knowledge into action and demonstrating capability. This weird, jittery energy is where you physically prove you can do it."
+    },
+    'r': {
+      title: "Reinforcement to sustain the change",
+      text: "Recognizing milestones and embedding the new way of working. The weird effect is the echoing, overlapping confirmation of success."
+    }
+  };
+
+  function activatePhase(phaseId, rotationAngle) {
+    const hub = document.getElementById('weird-hub');
+    const pointer = document.getElementById('dial-pointer');
+    const display = document.getElementById('phase-display');
+    const title = document.getElementById('phase-title');
+    const text = document.getElementById('phase-text');
+
+    // 1. Reset all active buttons and effects
+    document.querySelectorAll('.dial-button').forEach(btn => btn.classList.remove('active'));
+    hub.className = 'weird-hub'; // Reset hub class
+
+    // 2. Activate selected button
+    document.getElementById(`btn-${phaseId}`).classList.add('active');
+
+    // 3. Rotate the pointer
+    pointer.style.transform = `rotate(${rotationAngle}deg)`;
+
+    // 4. Activate the weird effect on the hub
+    hub.classList.add(`${phaseId}-active`);
+
+    // 5. Update the display text with slight fade
+    display.style.opacity = '0';
+    setTimeout(() => {
+      title.innerText = phaseData[phaseId].title;
+      text.innerText = phaseData[phaseId].text;
+      display.style.opacity = '1';
+    }, 250);
+  }
+
+  function reportCompletion() {
+    // 1. Trigger Rise completion event
+    window.parent.postMessage({ type: 'complete'}, '*');
+
+    // 2. Provide visual feedback on button
+    const btn = document.getElementById('submit-btn');
+    btn.classList.add('completed');
+    btn.style.backgroundColor = '#11C7E6';
+    btn.style.color = '#02102B';
+    btn.innerHTML = `<svg class="completion-icon" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>Activity Confirmed!`;
+  }
+</script>
