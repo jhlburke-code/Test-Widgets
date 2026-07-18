@@ -1,5 +1,5 @@
-<!-- Psychological Safety AI Transformation Widget -->
-<!-- Description: Interactive simulator that demonstrates the impact of psychological safety during an AI transition. Place in a Rise Embed or Code Snippet block. -->
+<!-- Psychological Safety in AI Transformation Interactive Widget -->
+<!-- Description: Place this in a Rise Multimedia Embed block to let learners explore how team roles adapt to AI tools securely and confidently. -->
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   /* Defensive base spacing to prevent vertical scrollbars in standard Rise wrappers */
@@ -10,347 +10,398 @@
   }
 
   /* Style Bleed Prevention */
-  #custom-container-psy-safety, 
-  #custom-container-psy-safety * {
+  #custom-container-ai-safety, 
+  #custom-container-ai-safety * {
     box-sizing: border-box;
   }
 
   /* Strict Width Constraints & Layout */
-  #custom-container-psy-safety {
+  #custom-container-ai-safety {
     font-family: 'Open Sans', sans-serif;
     background-color: #F4F7FA;
     max-width: 800px;
     width: calc(100% - 32px);
     margin: 24px auto;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 32px;
     color: #02102B;
-    border: 1px solid rgba(11, 42, 99, 0.1);
-    box-shadow: 0 4px 20px rgba(2, 16, 43, 0.05);
-    text-align: center;
+    border: 1px solid #0B2A63;
   }
   
-  .brand-primary { 
-    color: #0B2A63; 
-    margin-top: 0;
-    font-size: 26px;
-    font-weight: 700;
+  .widget-header {
+    text-align: center;
+    margin-bottom: 24px;
   }
 
-  .subtitle {
+  .brand-primary { 
+    color: #0B2A63;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .widget-description {
     color: #02102B;
     font-size: 15px;
-    line-height: 1.5;
     margin-bottom: 24px;
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
+    line-height: 1.5;
   }
   
-  .main-action-btn {
+  /* Role Cards Grid */
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .role-card {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(11, 42, 99, 0.1);
+    border-radius: 6px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card:hover {
+    border-color: #11C7E6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(17, 199, 230, 0.15);
+  }
+
+  .role-card.active {
+    border-color: #0B2A63;
+    background-color: rgba(11, 42, 99, 0.02);
+    box-shadow: inset 4px 0 0 0 #0B2A63;
+  }
+
+  .role-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50px;
+    background-color: #F4F7FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease;
+  }
+
+  .role-card:hover .role-icon-wrapper {
+    background-color: rgba(17, 199, 230, 0.1);
+  }
+
+  .role-icon {
+    width: 20px;
+    height: 20px;
+    stroke: #0B2A63;
+    stroke-width: 2;
+    fill: none;
+    transition: stroke 0.3s ease;
+  }
+
+  .role-card:hover .role-icon {
+    stroke: #11C7E6;
+  }
+
+  .role-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .role-number {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #0B2A63;
+    opacity: 0.7;
+    font-weight: 600;
+  }
+
+  .role-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0B2A63;
+    margin-top: 2px;
+  }
+
+  /* Feedback Panel Display */
+  .display-panel {
+    background-color: #FFFFFF;
+    border: 1px solid #0B2A63;
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 24px;
+    min-height: 120px;
+    transition: all 0.3s ease;
+  }
+
+  .display-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0B2A63;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .display-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #02102B;
+    margin: 0;
+  }
+
+  /* Submit Action */
+  .action-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .interactive-element {
     background-color: #0B2A63;
     color: #FFFFFF;
     border: none;
-    padding: 14px 28px;
+    padding: 14px 32px;
     font-size: 15px;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(11, 42, 99, 0.2);
+    box-shadow: 0 2px 4px rgba(11, 42, 99, 0.2);
   }
 
-  .main-action-btn:hover {
+  .interactive-element:hover {
     background-color: #11C7E6;
+    color: #02102B;
     transform: translateY(-1px);
   }
 
-  .main-action-btn:disabled {
-    background-color: #A0AEC0;
+  .interactive-element:disabled {
+    background-color: #cccccc;
+    color: #666666;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
   }
 
-  /* Grid Layout for Team Elements */
-  .team-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin: 32px 0;
-  }
-
-  .team-card {
-    background: #FFFFFF;
-    border-radius: 8px;
-    padding: 20px;
-    border: 1px solid rgba(2, 10, 43, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    text-align: left;
-    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: #F4F7FA;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-  }
-
-  .card-icon-wrapper svg {
-    width: 24px;
-    height: 24px;
-    stroke: #0B2A63;
-    fill: none;
-    stroke-width: 2;
-    transition: all 0.3s ease;
-  }
-
-  .card-info {
-    flex-grow: 1;
-  }
-
-  .card-tag {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #A0AEC0;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
-
-  .card-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #0B2A63;
-    margin: 0;
-  }
-
-  /* State: Disrupted / Anxious */
-  .team-grid.disrupted .team-card {
-    border-color: #FF8A65;
-    cursor: pointer;
-    background-color: #FFF5F2;
-    animation: gentle-shake 0.5s ease-in-out infinite alternate;
-  }
-
-  .team-grid.disrupted .team-card:hover {
-    box-shadow: 0 4px 15px rgba(255, 138, 101, 0.25);
-    border-color: #11C7E6;
-  }
-
-  .team-grid.disrupted .team-card .card-icon-wrapper {
-    background-color: #FFCCBC;
-  }
-
-  .team-grid.disrupted .team-card .card-icon-wrapper svg {
-    stroke: #D84315;
-  }
-
-  /* State: Stabilized / Safe */
-  .team-card.stabilized {
-    animation: none !important;
-    border-color: #11C7E6 !important;
-    background-color: #E6F9FC !important;
-    cursor: default !important;
-  }
-
-  .team-card.stabilized .card-icon-wrapper {
-    background-color: #11C7E6 !important;
-  }
-
-  .team-card.stabilized .card-icon-wrapper svg {
-    stroke: #FFFFFF !important;
-  }
-
-  /* Detail Feedback Panel */
-  .feedback-panel {
-    background: #FFFFFF;
-    border-left: 4px solid #0B2A63;
-    border-radius: 4px;
-    padding: 20px;
-    text-align: left;
-    margin-top: 24px;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
-  }
-
-  .feedback-text {
-    margin: 0;
+  .completion-message {
     font-size: 14px;
-    line-height: 1.6;
-    color: #02102B;
-    font-style: italic;
+    color: #0B2A63;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
-  /* Animations */
-  @keyframes gentle-shake {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-3px); }
+  .completion-message.show {
+    opacity: 1;
   }
 
   /* Mobile Responsiveness Rules */
   @media (max-width: 768px) {
-    #custom-container-psy-safety {
+    #custom-container-ai-safety {
       width: calc(100% - 24px);
       margin: 12px auto;
       padding: 24px 16px;
     }
-    .team-grid {
+    
+    .roles-grid {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
-    .brand-primary {
-      font-size: 22px;
+
+    .role-card {
+      padding: 16px;
     }
   }
 </style>
 
-<div id="custom-container-psy-safety">
-  <h2 class="brand-primary">AI Shift: Building Team Trust</h2>
-  <p class="subtitle" id="instruction-text">
-    When new AI tools arrive, anxiety often rises. Click <strong>"Launch AI Initiative"</strong> to see how change impacts your team dynamic, then guide them to safety.
-  </p>
-
-  <button class="main-action-btn" id="action-btn" onclick="startSimulation()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-    Launch AI Initiative
-  </button>
-
-  <div class="team-grid" id="team-container">
-    <!-- Card 1 -->
-    <div class="team-card" data-index="1" onclick="stabilizeRole(1)">
-      <div class="card-icon-wrapper">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-      </div>
-      <div class="card-info">
-        <div class="card-tag">Dynamic 01</div>
-        <h4 class="card-title" id="title-1">Open Voice</h4>
-      </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="team-card" data-index="2" onclick="stabilizeRole(2)">
-      <div class="card-icon-wrapper">
-        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-      </div>
-      <div class="card-info">
-        <div class="card-tag">Dynamic 02</div>
-        <h4 class="card-title" id="title-2">Risk Experimentation</h4>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="team-card" data-index="3" onclick="stabilizeRole(3)">
-      <div class="card-icon-wrapper">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-      </div>
-      <div class="card-info">
-        <div class="card-tag">Dynamic 03</div>
-        <h4 class="card-title" id="title-3">Mistake Handling</h4>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="team-card" data-index="4" onclick="stabilizeRole(4)">
-      <div class="card-icon-wrapper">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      </div>
-      <div class="card-info">
-        <div class="card-tag">Dynamic 04</div>
-        <h4 class="card-title" id="title-4">Inclusive Growth</h4>
-      </div>
-    </div>
+<div id="custom-container-ai-safety">
+  <div class="widget-header">
+    <h2 class="brand-primary">AI Transformation: Safe Spaces to Learn</h2>
+    <p class="widget-description">When introducing new AI tools, psychological safety ensures teams feel secure to test, ask questions, and grow. Select each role below to see how they can safely explore AI tools without fear of failure.</p>
   </div>
 
-  <div class="feedback-panel">
-    <p class="feedback-text" id="feedback-display">
-      Select an option or launch the simulation above to start mapping psychological safety behaviors.
+  <div class="roles-grid">
+    <!-- Role 01 -->
+    <button class="role-card" onclick="selectRole(1)" id="card-1" aria-label="View AI role for Researchers">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 01</span>
+        <span class="role-name">Researchers</span>
+      </div>
+    </button>
+
+    <!-- Role 02 -->
+    <button class="role-card" onclick="selectRole(2)" id="card-2" aria-label="View AI role for Analysts">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 02</span>
+        <span class="role-name">Analysts</span>
+      </div>
+    </button>
+
+    <!-- Role 03 -->
+    <button class="role-card" onclick="selectRole(3)" id="card-3" aria-label="View AI role for Legal Staff">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 03</span>
+        <span class="role-name">Legal Staff</span>
+      </div>
+    </button>
+
+    <!-- Role 04 -->
+    <button class="role-card" onclick="selectRole(4)" id="card-4" aria-label="View AI role for Finance Teams">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <line x1="12" y1="1" x2="12" y2="23"></line>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 04</span>
+        <span class="role-name">Finance Teams</span>
+      </div>
+    </button>
+
+    <!-- Role 05 -->
+    <button class="role-card" onclick="selectRole(5)" id="card-5" aria-label="View AI role for Operations">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 05</span>
+        <span class="role-name">Operations</span>
+      </div>
+    </button>
+
+    <!-- Role 06 -->
+    <button class="role-card" onclick="selectRole(6)" id="card-6" aria-label="View AI role for Exec Assistants">
+      <div class="role-icon-wrapper">
+        <svg class="role-icon" viewBox="0 0 24 24">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+      </div>
+      <div class="role-info">
+        <span class="role-number">Role 06</span>
+        <span class="role-name">Exec Assistants</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Dynamic Content Display Panel -->
+  <div class="display-panel" id="safety-display-panel">
+    <div class="display-title" id="display-title">
+      <span>💡 Select a role above to explore</span>
+    </div>
+    <p class="display-text" id="display-text">
+      Building a psychologically safe culture means every role gets the freedom to test tools openly, voice doubts early, and refine workflows collaboratively without feeling exposed.
     </p>
+  </div>
+
+  <!-- Submit & Complete Button -->
+  <div class="action-wrapper">
+    <button class="interactive-element" id="submit-btn" disabled onclick="reportCompletion()">I Understand This Strategy</button>
+    <div class="completion-message" id="complete-msg">✓ Activity completed successfully!</div>
   </div>
 </div>
 
 <script>
-  let simStarted = false;
-  let stabilizedCount = 0;
-  const totalRoles = 4;
-  const stabilizedSet = new Set();
-
+  // Data for each role block
   const roleData = {
     1: {
-      anxious: "Anxious: Hiding AI concerns or worries.",
-      safe: "Safe: Sharing concerns & feedback transparently.",
-      action: "Strategic Action Applied: You created an open Q&A channel for honest feedback about the new AI tools. Team members now feel secure speaking up."
+      title: "Researchers & AI Exploration",
+      text: "Researchers can safely utilize AI models to discover hidden themes across vast content bases. Psychological safety enables them to report when the AI delivers inaccurate outputs, helping the entire team adapt safely without fear of bias."
     },
     2: {
-      anxious: "Anxious: Avoiding new AI testing entirely.",
-      safe: "Safe: Actively experimenting with novel prompts.",
-      action: "Strategic Action Applied: You framed the AI adoption as an exploration project, allocating safe 'sandbox hours' for trial and discovery."
+      title: "Analysts & Smart Automation",
+      text: "Analysts leverage AI tools to parse massive metric sets swiftly. In a secure environment, they can openly voice concerns about data inconsistencies or code vulnerabilities, ensuring transparency remains a priority."
     },
     3: {
-      anxious: "Anxious: Concealing bad AI data outputs.",
-      safe: "Safe: Reporting errors early for learning.",
-      action: "Strategic Action Applied: You celebrated a team member who caught an AI mistake early, reinforcing that spotting errors is a team win."
+      title: "Legal Staff & Document Verification",
+      text: "Legal professionals deploy AI models to fast-track broad compliance checks. Safety means they can flag structural risks or question machine suggestions openly before final agreements are signed."
     },
     4: {
-      anxious: "Anxious: Fearing sudden displacement.",
-      safe: "Safe: Up-skilling to use AI collaboratively.",
-      action: "Strategic Action Applied: You paired tech-forward staff with traditional experts to design human-in-the-loop workflows, validating everyone's place."
+      title: "Finance Teams & Predictive Modeling",
+      text: "Finance leaders utilize predictive AI algorithms to project operational budgets. A supportive culture lets them test complex algorithms without pressure, knowing they can double-check systemic figures safely."
+    },
+    5: {
+      title: "Operations & Flow Enhancement",
+      text: "Operations specialists implement automation bots to remove routine processing bottlenecks. When safe to innovate, they can easily pivot or scrap tools that don't align with practical team realities."
+    },
+    6: {
+      title: "Executive Assistants & Schedule Control",
+      text: "Executive assistants use generative tools to draft communications and structure global timeframes. Safety lets them reject generic AI suggestions to preserve authentic leadership tones."
     }
   };
 
-  function startSimulation() {
-    if (simStarted) return;
-    simStarted = true;
+  // Track viewed roles to enable completion button
+  const viewedRoles = new Set();
+  const totalRoles = 6;
+
+  function selectRole(roleId) {
+    // Add active styling classes
+    document.querySelectorAll('.role-card').forEach(card => {
+      card.classList.remove('active');
+    });
+    document.getElementById(`card-${roleId}`).classList.add('active');
+
+    // Update the panel content
+    const roleInfo = roleData[roleId];
+    document.getElementById('display-title').innerHTML = `<span>🛡️ ${roleInfo.title}</span>`;
+    document.getElementById('display-text').innerText = roleInfo.text;
+
+    // Track user progress
+    viewedRoles.add(roleId);
     
-    document.getElementById('action-btn').disabled = true;
-    document.getElementById('team-container').classList.add('disrupted');
-    document.getElementById('instruction-text').innerHTML = "The transition created uncertainty. <strong>Click each disrupted dynamic card</strong> to deploy psychological safety frameworks and stabilize your team.";
-    document.getElementById('feedback-display').innerText = "The team is feeling hesitant about the changes. Address each area above to bring clarity and support.";
-    
-    for (let i = 1; i <= totalRoles; i++) {
-      document.getElementById(`title-1`).innerText = roleData[1].anxious;
-      document.getElementById(`title-2`).innerText = roleData[2].anxious;
-      document.getElementById(`title-3`).innerText = roleData[3].anxious;
-      document.getElementById(`title-4`).innerText = roleData[4].anxious;
+    // Enable completion button once all choices are reviewed
+    if (viewedRoles.size === totalRoles) {
+      document.getElementById('submit-btn').removeAttribute('disabled');
     }
   }
 
-  function stabilizeRole(id) {
-    if (!simStarted || stabilizedSet.has(id)) return;
+  function reportCompletion() {
+    // Execute native Rise completion event
+    window.parent.postMessage({ type: 'complete'}, '*');
     
-    stabilizedSet.add(id);
-    
-    const card = document.querySelector(`.team-card[data-index="${id}"]`);
-    card.classList.add('stabilized');
-    
-    document.getElementById(`title-${id}`).innerText = roleData[id].safe;
-    document.getElementById('feedback-display').innerText = roleData[id].action;
-    
-    checkCompletion();
-  }
-
-  function checkCompletion() {
-    if (stabilizedSet.size === totalRoles) {
-      document.getElementById('team-container').classList.remove('disrupted');
-      document.getElementById('instruction-text').innerHTML = "<strong>Transformation Successful!</strong> You built a culturally resilient workforce ready to build with AI.";
-      document.getElementById('feedback-display').innerHTML = "<strong>Result:</strong> By actively cultivating psychological safety, you turned fear into collaborative power. This activity is complete.";
-      
-      // Mandatory Rise block completion signal
-      window.parent.postMessage({ type: 'complete' }, '*');
-    }
+    // Provide clean visual feedback
+    document.getElementById('complete-msg').classList.add('show');
+    document.getElementById('submit-btn').style.backgroundColor = '#11C7E6';
+    document.getElementById('submit-btn').style.color = '#02102B';
+    document.getElementById('submit-btn').innerText = "Strategy Confirmed";
   }
 </script>
