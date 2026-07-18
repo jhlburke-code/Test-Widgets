@@ -1,0 +1,409 @@
+<!-- Job Architecture & Human-Core Skills Flashcard Widget -->
+<!-- Description: Place this component in an Articulate Rise Embed or Code Snippet block. It introduces a clean, responsive layout where learners flip flashcards to discover how various roles shift focus to unique human-core skills during AI transformation. -->
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Defensive base spacing to prevent vertical scrollbars in standard Rise wrappers */
+  body {
+    margin: 0;
+    padding: 0 0 40px 0;
+    background-color: transparent;
+  }
+
+  /* Style Bleed Prevention */
+  #custom-container-job-architecture, 
+  #custom-container-job-architecture * {
+    box-sizing: border-box;
+  }
+
+  /* Strict Width Constraints & Layout */
+  #custom-container-job-architecture {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #F4F7FA;
+    max-width: 800px;
+    width: calc(100% - 32px);
+    margin: 24px auto;
+    border-radius: 8px;
+    padding: 32px;
+    color: #02102B;
+    border: 1px solid #0B2A63;
+  }
+  
+  .widget-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .brand-primary { 
+    color: #0B2A63;
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .widget-description {
+    color: #02102B;
+    font-size: 15px;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+  
+  /* Flashcard Grid */
+  .flashcard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  /* Flip Card Structure */
+  .flashcard-wrapper {
+    background-color: transparent;
+    perspective: 1000px;
+    height: 140px;
+    cursor: pointer;
+  }
+
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .flashcard-wrapper.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 6px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Front Design mimicking image reference layout */
+  .card-front {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(11, 42, 99, 0.12);
+    box-shadow: 0 2px 4px rgba(2, 16, 43, 0.04);
+  }
+
+  .flashcard-wrapper:hover .card-front {
+    border-color: #11C7E6;
+    box-shadow: 0 4px 12px rgba(17, 199, 230, 0.15);
+  }
+
+  /* Back Design for the human-skill reveal */
+  .card-back {
+    background-color: #0B2A63;
+    color: #FFFFFF;
+    transform: rotateY(180deg);
+    border: 1px solid #0B2A63;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .role-icon-container {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: #F4F7FA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+
+  .role-icon {
+    width: 24px;
+    height: 24px;
+    stroke: #0B2A63;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .role-meta {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .role-tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(11, 42, 99, 0.6);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .role-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0B2A63;
+    margin: 0;
+  }
+
+  /* Back Content Text */
+  .back-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #11C7E6;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .back-skill-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .back-description {
+    font-size: 13px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+  }
+
+  /* Progress and Interaction Utilities */
+  .action-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid rgba(11, 42, 99, 0.1);
+    padding-top: 24px;
+  }
+
+  .progress-text {
+    font-size: 13px;
+    color: #02102B;
+    font-weight: 600;
+  }
+
+  .interactive-element {
+    background-color: #0B2A63;
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(11, 42, 99, 0.2);
+  }
+
+  .interactive-element:hover:not(:disabled) {
+    background-color: #11C7E6;
+    color: #02102B;
+  }
+
+  .interactive-element:disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Mobile Responsiveness Rules */
+  @media (max-width: 768px) {
+    #custom-container-job-architecture {
+      width: calc(100% - 24px);
+      margin: 12px auto;
+      padding: 24px 16px;
+    }
+    
+    .flashcard-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .flashcard-wrapper {
+      height: 130px;
+    }
+  }
+</style>
+
+<div id="custom-container-job-architecture">
+  <div class="widget-header">
+    <h2 class="brand-primary">Job Architecture & Human-Core Skills</h2>
+    <p class="widget-description">AI handles routine tasks, but human skills build the true value. Flip each card below to see the essential human strengths required across different roles.</p>
+  </div>
+
+  <div class="flashcard-grid">
+    <!-- Card 01 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 1)" role="button" aria-label="Flip card for Researchers">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 01</span>
+            <h3 class="role-title">Researchers</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Critical Curiosity</div>
+          <p class="back-description">Asking the right questions and checking AI facts with deep human domain experience.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 02 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 2)" role="button" aria-label="Flip card for Analysts">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 02</span>
+            <h3 class="role-title">Analysts</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Strategic Context</div>
+          <p class="back-description">Connecting raw automated reports to real-world business strategy and big goals.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 03 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 3)" role="button" aria-label="Flip card for Legal Staff">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 03</span>
+            <h3 class="role-title">Legal Staff</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Ethical Judgment</div>
+          <p class="back-description">Managing risk and compliance matters that require human empathy and fine nuance.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 04 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 4)" role="button" aria-label="Flip card for Finance Teams">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 04</span>
+            <h3 class="role-title">Finance Teams</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Risk Synthesis</div>
+          <p class="back-description">Balancing automated predictions against actual shifting market conditions safely.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 05 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 5)" role="button" aria-label="Flip card for Operations">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 05</span>
+            <h3 class="role-title">Operations</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Agile Alignment</div>
+          <p class="back-description">Fixing process breakdown points and organizing cross-team cooperation models.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 06 -->
+    <div class="flashcard-wrapper" onclick="flipCard(this, 6)" role="button" aria-label="Flip card for Exec Assistants">
+      <div class="flashcard-inner">
+        <div class="card-front">
+          <div class="role-icon-container">
+            <svg class="role-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+          </div>
+          <div class="role-meta">
+            <span class="role-tag">Role 06</span>
+            <h3 class="role-title">Exec Assistants</h3>
+          </div>
+        </div>
+        <div class="card-back">
+          <span class="back-label">Human-Core Focus</span>
+          <div class="back-skill-title">Relation Sync</div>
+          <p class="back-description">Protecting executive brand tone and reading emotional cues during global alignment shifts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-container">
+    <div class="progress-text" id="progress-indicator">Cards Flipped: 0 / 6</div>
+    <button class="interactive-element" id="submit-btn" disabled onclick="reportCompletion()">Acknowledge Concepts</button>
+  </div>
+</div>
+
+<script>
+  const flippedCards = new Set();
+  const totalCards = 6;
+
+  function flipCard(element, cardId) {
+    element.classList.toggle('flipped');
+    
+    // Track unique flips to check completion status
+    if (element.classList.contains('flipped')) {
+      flippedCards.add(cardId);
+    }
+    
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const indicator = document.getElementById('progress-indicator');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    indicator.innerText = `Cards Flipped: ${flippedCards.size} / ${totalCards}`;
+    
+    if (flippedCards.size === totalCards) {
+      submitBtn.removeAttribute('disabled');
+      submitBtn.style.backgroundColor = '#11C7E6';
+      submitBtn.style.color = '#02102B';
+    }
+  }
+
+  function reportCompletion() {
+    window.parent.postMessage({ type: 'complete'}, '*');
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.innerText = "Architecture Reviewed ✓";
+    submitBtn.style.backgroundColor = '#0B2A63';
+    submitBtn.style.color = '#FFFFFF';
+    submitBtn.disabled = true;
+  }
+</script>
